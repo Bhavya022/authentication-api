@@ -4,7 +4,7 @@ const passport = require('passport');
 const session = require('express-session');
 const dotenv = require('dotenv'); // Import dotenv
 const swaggerUi = require('swagger-ui-express');
-const swaggerSpec = require('./swaggerConfig'); // Import the Swagger configuration
+const swaggerSpec = require('./config/swaggerConfig');  // Import the Swagger configuration
 
 dotenv.config(); // Load environment variables from .env file
 
