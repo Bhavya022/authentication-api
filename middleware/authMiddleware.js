@@ -1,26 +1,41 @@
-// middleware/authMiddleware.js
-
 const jwt = require('jsonwebtoken');
-require('dotenv').config();
-// Middleware to authenticate user
-// Middleware to authenticate user
-const isAuthenticated = (req, res, next) => {
-    // Get token from request headers or query parameters or cookies
-    const token = req.headers.authorization;
+const User = require('../models/User');
 
-    if (!token) {
-        return res.status(401).json({ message: 'Unauthorized' });
-    }
+// Middleware for authenticating user
+exports.authenticateUser = async (req, res, next) => {
+  // Check for token in headers
+  const token = req.headers.authorization && req.headers.authorization.split(' ')[1];
 
-    // Verify the token
-    jwt.verify(token, process.env.SECRET_KEY, (err, decodedToken) => {
-        if (err) {
-            return res.status(401).json({ message: 'Invalid token' });
-        }
-        // Attach the decoded token payload to the request object
-        req.user = decodedToken;
-        next(); // Call the next middleware
-    });
+  if (!token) {
+    return res.status(401).json({ msg: 'No token, authorization denied' });
+  }
+
+  try {
+    // Verify token
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+    // Add user from payload to request object
+    req.user = await User.findById(decoded.id).select('-password');
+    next();
+  } catch (error) {
+    res.status(401).json({ msg: 'Token is not valid' });
+  }
 };
 
-module.exports = isAuthenticated;
+// Middleware for checking user role (admin)
+exports.checkAdminRole = (req, res, next) => {
+  if (req.user && req.user.isAdmin) {
+    next();
+  } else {
+    res.status(403).json({ msg: 'Access forbidden. Admin privileges required' });
+  }
+};
+
+// Middleware for checking profile visibility
+exports.checkProfileVisibility = (req, res, next) => {
+  if (req.user && req.user.profileVisibility === 'public') {
+    next();
+  } else {
+    res.status(403).json({ msg: 'Access forbidden. Profile is private' });
+  }
+};

@@ -1,5 +1,5 @@
 {
-  "name": "authentication-api",
+  "name": "enhanced-auth-api",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -12,13 +12,16 @@
   "dependencies": {
     "bcrypt": "^5.1.1",
     "dotenv": "^16.4.5",
-    "ejs": "^3.1.9",
     "express": "^4.19.2",
     "express-session": "^1.18.0",
+    "express-validator": "^7.0.1",
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.2.3",
     "passport": "^0.7.0",
+    "passport-facebook": "^3.0.0",
+    "passport-github": "^1.1.0",
     "passport-local": "^1.0.0",
+    "passport-twitter": "^1.0.4",
     "swagger-jsdoc": "^6.2.8",
     "swagger-ui-express": "^5.0.0"
   }

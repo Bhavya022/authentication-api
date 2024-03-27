@@ -1,28 +1,30 @@
-// controllers/adminController.js
+const User = require('../models/User');
 
-// Import necessary modules
-const User = require('../models/user');
-
-// Controller functions for admin actions
-const adminController = {
-    // Get all user profiles (both public and private)
-    getAllProfiles: async (req, res) => {
-        try {
-            // Check if the user is an admin
-            if (!req.user.isAdmin) {
-                return res.status(403).json({ message: 'Unauthorized' });
-            }
-
-            // Fetch all user profiles
-            const users = await User.find();
-
-            // Send the list of user profiles in the response
-            res.json(users);
-        } catch (error) {
-            console.error('Error fetching user profiles:', error);
-            res.status(500).json({ message: 'Internal server error' });
-        }
-    }
+// Controller for getting all users (for admin)
+exports.getAllUsers = async (req, res) => {
+  try {
+    const users = await User.find().select('-password');
+    res.json(users);
+  } catch (error) {
+    console.error(error.message);
+    res.status(500).send('Server Error');
+  }
 };
 
-module.exports = adminController;
+// Controller for getting user by ID (for admin)
+exports.getUserById = async (req, res) => {
+  const userId = req.params.id;
+
+  try {
+    const user = await User.findById(userId).select('-password');
+
+    if (!user) {
+      return res.status(404).json({ msg: 'User not found' });
+    }
+
+    res.json(user);
+  } catch (error) {
+    console.error(error.message);
+    res.status(500).send('Server Error');
+  }
+};

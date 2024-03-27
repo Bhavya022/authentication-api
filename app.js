@@ -1,65 +1,63 @@
 const express = require('express');
-const mongoose = require('mongoose');
+const connectDB = require('./config/db');
 const passport = require('passport');
 const session = require('express-session');
-const dotenv = require('dotenv');
-const authRoutes = require('./routes/authRoutes');
-const profileRoutes = require('./routes/profileRoutes');
-const adminRoutes = require('./routes/adminRoutes');
-const isAuthenticated = require('./middleware/authMiddleware');
-const path = require('path'); // Added for serving static files and views
+const dotenv = require('dotenv'); // Import dotenv
+const swaggerUi = require('swagger-ui-express');
+const swaggerSpec = require('./swaggerConfig'); // Import the Swagger configuration
 
-// Load environment variables from .env file
-dotenv.config();
+dotenv.config(); // Load environment variables from .env file
 
-// Initialize Express application
+// Initialize Express app
 const app = express();
+
+// Connect to MongoDB
+connectDB();
 
 // Middleware for parsing JSON bodies
 app.use(express.json());
 
-// Middleware for serving static files (if needed)
-app.use(express.static(path.join(__dirname, 'public')));
-
-// Middleware for session management (if needed)
+// Middleware for session management
 app.use(session({
-    secret: process.env.SESSION_SECRET || 'secret',
-    resave: false,
-    saveUninitialized: false
+  secret: process.env.SESSION_SECRET, // Set session secret
+  resave: false,
+  saveUninitialized: false
 }));
 
-// Initialize Passport.js middleware
+// Initialize Passport middleware
 app.use(passport.initialize());
 app.use(passport.session());
 
-// Connect to MongoDB database
-mongoose.connect(process.env.MONGODB_URI, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true
-}).then(() => {
-    console.log('Connected to MongoDB');
-}).catch(err => {
-    console.error('MongoDB connection error:', err);
-});
+// Passport configuration
+require('./config/passport')(passport); // Pass passport as an argument
 
 // Define routes
-app.use('/auth', authRoutes);
-app.use('/profile', isAuthenticated, profileRoutes);
-app.use('/admin', isAuthenticated, adminRoutes);
+const authRoutes = require('./routes/authRoutes');
+const profileRoutes = require('./routes/profileRoutes');
+const adminRoutes = require('./routes/adminRoutes');
 
-// Error handling middleware
+// Mount routes
+app.use('/api/auth', authRoutes);
+app.use('/api/profile', profileRoutes);
+app.use('/api/admin', adminRoutes);
+
+// Error handler middleware
 app.use((err, req, res, next) => {
-    console.error(err.stack);
-    res.status(500).send('Something went wrong!');
+  console.error(err.stack);
+  res.status(500).send('Server Error');
 });
 
-// Set up views directory
-app.set('views', path.join(__dirname, 'views'));
-app.set('view engine', 'html');
-app.engine('html', require('ejs').renderFile);
+// Middleware for session management
+app.use(session({
+    secret: process.env.SESSION_SECRET, // Provide a secret for session encryption
+    resave: false,
+    saveUninitialized: false
+  }));
+  
+  app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 // Start the server
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-    console.log(`Server is running on port ${PORT}`);
+  console.log(`Server is running on port ${PORT}`);
 });

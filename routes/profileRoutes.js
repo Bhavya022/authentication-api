@@ -1,12 +1,15 @@
-// routes/profileRoutes.js
-
 const express = require('express');
 const router = express.Router();
 const profileController = require('../controllers/profileController');
-const isAuthenticated = require('../middleware/authMiddleware');
+const { authenticateUser } = require('../middleware/authMiddleware');
 
-// Routes for user profile management
-router.get('/profile', isAuthenticated, profileController.getProfile);
-router.put('/profile', isAuthenticated, profileController.editProfile);
+// Route for getting user profile
+router.get('/profile', authenticateUser, profileController.getUserProfile);
+
+// Route for updating user profile
+router.put('/profile', authenticateUser, profileController.updateUserProfile);
+
+// Route for updating profile visibility
+router.put('/profile/visibility', authenticateUser, profileController.updateProfileVisibility);
 
 module.exports = router;
