@@ -1,6 +1,6 @@
 const passport = require('passport');
 const jwt = require('jsonwebtoken');
-const User = require('../models/User');
+const User = require('./models/User');
 const { validationResult } = require('express-validator');
 
 // Controller for user registration
