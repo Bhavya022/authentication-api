@@ -3,7 +3,7 @@ Enhanced Authentication API
 Description
 The Enhanced Authentication API is a backend service that provides authentication functionalities with support for public and private user profiles. It allows users to register, log in, log in/register with social media accounts, manage their profile details, and set their profiles as public or private. Admin users have the ability to view both public and private user profiles, while normal users can only access public profiles.
 
-Features
+# Features
 User registration with email and password
 User login with email and password
 User login/register with Google, Facebook, Twitter, or GitHub
@@ -12,7 +12,7 @@ Uploading a new photo or providing an image URL for the profile
 Setting profile visibility as public or private
 Admin access to view both public and private user profiles
 Normal user access limited to public user profiles
-Technologies Used
+# Technologies Used
 Node.js
 Express.js
 MongoDB (with Mongoose ODM)
@@ -27,7 +27,6 @@ git clone <repository-url>
 Install dependencies:
 
 bash
-Copy code
 cd enhanced-auth-api
 npm install
 Set up environment variables:
@@ -39,7 +38,7 @@ Start the server:
 sql
 Copy code
 npm start
-API Documentation
+# API Documentation
 Explore the API endpoints and interact with them using the Swagger API playground. Access the Swagger documentation at http://localhost:3000/api-docs.
 
 Usage
